@@ -3,6 +3,7 @@
 
 #define O_RDONLY 00
 
+// we pass in the file descriptor and the line count
 void head(int fd, int lc) {
     char buf[512];
     int i, fileRead, nlc = 0;
@@ -29,6 +30,11 @@ int main(int argc, char *argv[]) {
 
     } else if (argc == 2) {
 
+        // This case is for cases such as
+        // grep the README | head | head -5
+        // where the second argument is
+        // the number of lines and not the file
+        // to open. (Only really activates when using pipes)
         if ((fd = open(argv[1], O_RDONLY)) < 0){
             head(0, atoi(++argv[1]));
             exit();
@@ -46,9 +52,12 @@ int main(int argc, char *argv[]) {
 
         head(fd, atoi(++argv[1]));
         close(fd);
+
     } else {
+
         printf(1, "Too many args...");
         exit();
+    
     }
 
     exit();
